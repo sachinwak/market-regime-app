@@ -11,6 +11,7 @@ import OptionChain from '@/components/OptionChain';
 import PreMarketStructure from '@/components/PreMarketStructure';
 import RegimeDecision from '@/components/RegimeDecision';
 import DailyChecklist from '@/components/DailyChecklist';
+import TradingInterpretation from '@/components/TradingInterpretation';
 import { Signal } from '@/types/market';
 
 export default function Dashboard() {
@@ -49,8 +50,13 @@ export default function Dashboard() {
         <Header onRefresh={handleRefresh} lastUpdated={lastUpdated} />
 
         {/* Regime Decision — pinned at top as the most important output */}
-        <div className="mb-6">
+        <div className="mb-4">
           <RegimeDecision signals={signals} />
+        </div>
+
+        {/* Trading Interpretation — overall intraday strategy derived from all signals */}
+        <div className="mb-6">
+          <TradingInterpretation signals={signals} />
         </div>
 
         {/* Steps grid */}
