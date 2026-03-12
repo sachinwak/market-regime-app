@@ -46,7 +46,7 @@ export default function Dashboard() {
         <div className="absolute -bottom-40 right-1/3 w-96 h-96 bg-emerald-600/8 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 py-8">
+      <div id="dashboard-main" className="relative z-10 max-w-7xl mx-auto px-4 py-8">
         <Header onRefresh={handleRefresh} lastUpdated={lastUpdated} />
 
         {/* Regime Decision — pinned at top as the most important output */}
