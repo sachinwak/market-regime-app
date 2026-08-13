@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Activity } from 'lucide-react';
 import { Signal } from '@/types/market';
 
+import { fetchVixData } from '@/lib/api-client';
+
 interface Props {
     onSignal: (signal: Signal) => void;
 }
@@ -19,9 +21,8 @@ export default function VixWidget({ onSignal }: Props) {
         const fetch_ = async () => {
             setLoading(true);
             try {
-                const res = await fetch('/api/nse?type=vix');
-                if (res.ok) {
-                    const data = await res.json();
+                const data = await fetchVixData();
+                if (data.vix !== null) {
                     setVix(data.vix);
                     setChange(data.change ?? 0);
                     const level = data.vix ?? 0;
@@ -32,7 +33,7 @@ export default function VixWidget({ onSignal }: Props) {
                         description: `VIX: ${level.toFixed(2)} — ${level < 15 ? 'low (stable)' : level > 20 ? 'high (trap risk)' : 'moderate'}`,
                     });
                 }
-            } catch { /* silent */ }
+            } catch (e) { /* silent */ }
             setLoading(false);
         };
         fetch_();

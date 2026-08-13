@@ -9,6 +9,8 @@ interface Props {
     onSignals: (signals: Signal[]) => void;
 }
 
+import { fetchYahooData } from '@/lib/api-client';
+
 const ASIAN_MARKETS = [
     { symbol: '^N225', label: 'Nikkei 225', description: 'Japan' },
     { symbol: '^HSI', label: 'Hang Seng', description: 'Hong Kong' },
@@ -29,10 +31,9 @@ export default function AsianMarkets({ onSignals }: Props) {
             const results = await Promise.all(
                 ASIAN_MARKETS.map(async (inst) => {
                     try {
-                        const res = await fetch(`/api/yahoo?symbol=${encodeURIComponent(inst.symbol)}`);
-                        if (!res.ok) return null;
-                        return await res.json() as MarketQuote;
-                    } catch { return null; }
+                        const data = await fetchYahooData(inst.symbol);
+                        return data as MarketQuote | null;
+                    } catch (e) { return null; }
                 })
             );
             setQuotes(results);

@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { BarChart3, ExternalLink } from 'lucide-react';
 import { Signal } from '@/types/market';
 
+import { fetchFiiDiiData } from '@/lib/api-client';
+
 interface Props {
     onSignal: (signal: Signal) => void;
 }
@@ -28,10 +30,8 @@ export default function FiiDiiFlow({ onSignal }: Props) {
         const fetch_ = async () => {
             setLoading(true);
             try {
-                const res = await fetch('/api/nse?type=fiidii');
-                if (res.ok) {
-                    const d: FiiDiiData = await res.json();
-                    setData(d);
+                const d = await fetchFiiDiiData() as FiiDiiData;
+                setData(d);
                     if (d.fii !== null) {
                         onSignalRef.current({
                             name: 'FII Flow',
@@ -42,8 +42,7 @@ export default function FiiDiiFlow({ onSignal }: Props) {
                     } else {
                         onSignalRef.current({ name: 'FII Flow', direction: 'neutral', strength: 0, description: 'Check manually' });
                     }
-                }
-            } catch { /* silent */ }
+            } catch (e) { /* silent */ }
             setLoading(false);
         };
         fetch_();

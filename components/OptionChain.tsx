@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Layers, ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Signal } from '@/types/market';
 
+import { fetchPcrData } from '@/lib/api-client';
+
 interface Props {
     onSignal: (signal: Signal) => void;
 }
@@ -35,10 +37,8 @@ export default function OptionChain({ onSignal }: Props) {
         const fetch_ = async () => {
             setLoading(true);
             try {
-                const res = await fetch('/api/nse?type=pcr');
-                if (res.ok) {
-                    const d: OcData = await res.json();
-                    setData(d);
+                const d = await fetchPcrData() as OcData;
+                setData(d);
                     if (d.pcr !== null) {
                         onSignalRef.current({
                             name: 'Option PCR',
@@ -49,8 +49,7 @@ export default function OptionChain({ onSignal }: Props) {
                     } else {
                         onSignalRef.current({ name: 'Option PCR', direction: 'neutral', strength: 0, description: 'Check manually' });
                     }
-                }
-            } catch { /* silent */ }
+            } catch (e) { /* silent */ }
             setLoading(false);
         };
         fetch_();

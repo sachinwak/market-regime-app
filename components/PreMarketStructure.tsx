@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { BookOpen, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { MarketQuote, Signal } from '@/types/market';
 
+import { fetchYahooData } from '@/lib/api-client';
+
 interface Props {
     onSignal: (signal: Signal) => void;
 }
@@ -18,9 +20,8 @@ export default function PreMarketStructure({ onSignal }: Props) {
         const fetch_ = async () => {
             setLoading(true);
             try {
-                const res = await fetch('/api/yahoo?symbol=%5ENSEI');
-                if (res.ok) {
-                    const data: MarketQuote = await res.json();
+                const data = await fetchYahooData('^NSEI');
+                if (data) {
                     setNifty(data);
                     const isGapUp = data.changePercent > 0.5;
                     const isGapDown = data.changePercent < -0.5;
@@ -31,7 +32,7 @@ export default function PreMarketStructure({ onSignal }: Props) {
                         description: `Nifty: ${data.changePercent >= 0 ? '+' : ''}${data.changePercent.toFixed(2)}%`,
                     });
                 }
-            } catch { /* silent */ }
+            } catch (e) { /* silent */ }
             setLoading(false);
         };
         fetch_();

@@ -9,6 +9,8 @@ interface Props {
     onSignals: (signals: Signal[]) => void;
 }
 
+import { fetchYahooData } from '@/lib/api-client';
+
 const GLOBAL_INSTRUMENTS = [
     { symbol: '^GSPC', label: 'S&P 500', description: 'US Market Sentiment', invertSignal: false },
     { symbol: 'DX-Y.NYB', label: 'Dollar Index (DXY)', description: 'USD Strength', invertSignal: true },
@@ -31,10 +33,9 @@ export default function GlobalSentiment({ onSignals }: Props) {
             const results = await Promise.all(
                 GLOBAL_INSTRUMENTS.map(async (inst) => {
                     try {
-                        const res = await fetch(`/api/yahoo?symbol=${encodeURIComponent(inst.symbol)}`);
-                        if (!res.ok) return null;
-                        return await res.json() as MarketQuote;
-                    } catch { return null; }
+                        const data = await fetchYahooData(inst.symbol);
+                        return data as MarketQuote | null;
+                    } catch (e) { return null; }
                 })
             );
             setQuotes(results);

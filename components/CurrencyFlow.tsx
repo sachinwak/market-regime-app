@@ -5,6 +5,8 @@ import { DollarSign } from 'lucide-react';
 import MarketCard from './MarketCard';
 import { MarketQuote, Signal } from '@/types/market';
 
+import { fetchYahooData } from '@/lib/api-client';
+
 interface Props {
     onSignal: (signal: Signal) => void;
 }
@@ -19,9 +21,8 @@ export default function CurrencyFlow({ onSignal }: Props) {
         const fetch_ = async () => {
             setLoading(true);
             try {
-                const res = await fetch('/api/yahoo?symbol=USDINR%3DX');
-                if (res.ok) {
-                    const data: MarketQuote = await res.json();
+                const data = await fetchYahooData('USDINR=X');
+                if (data) {
                     setQuote(data);
                     const signal: Signal = {
                         name: 'USD/INR',
@@ -31,7 +32,7 @@ export default function CurrencyFlow({ onSignal }: Props) {
                     };
                     onSignalRef.current(signal);
                 }
-            } catch { /* silent */ }
+            } catch (e) { /* silent */ }
             setLoading(false);
         };
         fetch_();
